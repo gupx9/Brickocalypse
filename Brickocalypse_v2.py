@@ -6,9 +6,8 @@ import math
 import random
 import time
 
-# Camera-related variables
-camera_pos = (0, 500, 600) # start 500 units away along  +Y,+Z,
-
+#____________________cam related variables____________________
+camera_pos = (0, 300, 200) # start 500 units away along  +Y,+Z,
 # x = 0 → camera is centered horizontally ___
 # y = 500 → camera is 500 units towards me
 # z = 500 → camera is 500 units "up" __I__
@@ -16,11 +15,11 @@ camera_pos = (0, 500, 600) # start 500 units away along  +Y,+Z,
 screen_width = 1200
 screen_height = 700
 fovY = 120  #Field Of View, in degrees.
-GRID_LENGTH = 800  # full length of grid lines along each axis (1000 in neg,0,100 in pos)
+GRID_LENGTH = 1200  # full length of grid lines along each axis (1000 in neg,0,100 in pos)
 cells = 15
 cell_size = GRID_LENGTH*2 / cells #one side / a
 
-#main_char
+#______________________main_char__________________
 scale_factor = 1
 player_x = 0
 player_y = 0
@@ -36,31 +35,37 @@ game_over = False
 cam_rotate = True
 rotation_speed = 0.5
 
-#enemy
-enemy_scale_factor = 1.5
+#___________________power spheres_____________
+powerup_li = [] # scattered powerups
+last_powerup_time = 0
+player_boost_speed = False
+boost_end_time = 0
+
+
+#_______________enemy__________________
+enemy_scale_factor = 1
 enemy_count = 5
 enemy_li = []
 enemy_speed = 0.05
 
-#bullet
+#____________________bullet_________________
 bullet_li = []
 bullet_speed = 5
 max_bullets = 30
 last_shot_time = 0
 
-# ===================== NEW GLOBALS =====================
+#___________________Tower___________________
 tower_height = 0
 target_height = 12  # win condition
 
+#___________________bricks_______________
 brick_li = []   # scattered tower pieces
-powerup_li = [] # scattered powerups
-last_powerup_time = 0
+
+
+#____________________day/night________________
 day_night = "day"
 last_day_switch = time.time()
 
-# apply player modifiers
-player_boost_speed = False
-boost_end_time = 0
 
 
 def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18): #draws 2D text on the screen
@@ -92,7 +97,7 @@ def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18): #draws 2D text on the 
     glMatrixMode(GL_MODELVIEW)
 
 def main_char():
-    global player_x, player_y, player_z, player_angle, scale_factor
+    global player_x, player_y, player_z, player_angle, scale_factor,fpp
     glPushMatrix()
     glTranslatef(player_x, player_y, player_z)
     if game_over:
@@ -123,12 +128,6 @@ def main_char():
     glutSolidCube(23)
     glPopMatrix()
 
-    #___head___
-    glColor3f(0.0, 0.0, 0.0)
-    glPushMatrix()
-    glTranslatef(0, 0, 145*scale_factor) #over body
-    gluSphere(gluNewQuadric(), 30, 10, 10)
-    glPopMatrix()
 
     #___arms___
     glColor3f(0.82, 0.70, 0.55)
@@ -151,69 +150,25 @@ def main_char():
     glTranslatef(0, 100*scale_factor, 125*scale_factor)
     glRotatef(90, 1, 0, 0)
     gluCylinder(gluNewQuadric(), 1*scale_factor, 10*scale_factor, 100*scale_factor, 10, 10)
+
+
+    if fpp:
+        #___head___
+        glColor3f(0.0, 0.0, 0.0)
+        glPushMatrix()
+        glTranslatef(0, 0, 120*scale_factor) #over body
+        gluSphere(gluNewQuadric(), 12, 12, 12)
+        glPopMatrix()
+    else:
+        #___head___
+        glColor3f(0.0, 0.0, 0.0)
+        glPushMatrix()
+        glTranslatef(0, 0, 110*scale_factor) #over body
+        gluSphere(gluNewQuadric(), 20, 10, 10)
+        glPopMatrix()
+    glPopMatrix()
     glPopMatrix()
 
-    glPopMatrix()
-
-def main_chr_with_samller_head():
-    global player_x, player_y, player_z, player_angle, scale_factor
-    glPushMatrix()
-    glTranslatef(player_x, player_y, player_z)
-    glRotatef(180, 0, 0, 1)
-    glRotatef(player_angle, 0, 0, 1)
-
-    #___leg___
-    glColor3f(0,0,1)
-    #right leg
-    glPushMatrix()
-    glTranslatef(-10*scale_factor, 0, 0) #move right
-    gluCylinder(gluNewQuadric(), 1*scale_factor, 10*scale_factor, 80*scale_factor, 10, 10)
-    glPopMatrix()
-    #left leg
-    glPushMatrix()
-    glTranslatef(10*scale_factor, 0, 0) #move left
-    gluCylinder(gluNewQuadric(), 1*scale_factor, 10*scale_factor, 80*scale_factor, 10, 10)
-    glPopMatrix()
-
-    #___body___
-    glColor3f(0.25, 0.35, 0.10)
-    glPushMatrix()
-    glTranslatef(0, 0, 100*scale_factor) #over legs
-    glScalef(1.75*scale_factor, 1*scale_factor, 3*scale_factor)
-    glutSolidCube(23)
-    glPopMatrix()
-
-    #___head___
-    glColor3f(0.0, 0.0, 0.0)
-    glPushMatrix()
-    glTranslatef(0, 0, 145*scale_factor) #over body
-    gluSphere(gluNewQuadric(), 10, 10, 10)
-    glPopMatrix()
-
-    #___arms___
-    glColor3f(0.82, 0.70, 0.55)
-    #right arm
-    glPushMatrix()
-    glTranslatef(-17*scale_factor, 65*scale_factor, 125*scale_factor)
-    glRotatef(90, 1, 0, 0)
-    gluCylinder(gluNewQuadric(), 3*scale_factor, 8*scale_factor, 65*scale_factor, 10, 10)
-    glPopMatrix()
-    #left arm
-    glPushMatrix()
-    glTranslatef(17* scale_factor, 65*scale_factor, 125*scale_factor)
-    glRotatef(90, 1, 0, 0)
-    gluCylinder(gluNewQuadric(), 3*scale_factor, 8*scale_factor, 65*scale_factor, 10, 10)
-    glPopMatrix()
-
-    #___gun___
-    glColor3f(0.5, 0.5, 0.5)
-    glPushMatrix()
-    glTranslatef(0, 100*scale_factor, 125*scale_factor)
-    glRotatef(90, 1, 0, 0)
-    gluCylinder(gluNewQuadric(), 1*scale_factor, 10*scale_factor, 100*scale_factor, 10, 10)
-    glPopMatrix()
-
-    glPopMatrix()
 
 def make_bricks():
     global brick_li
@@ -273,7 +228,7 @@ def draw_enemy():
         glColor3f(1.0, 0.0, 0.0)
         glPushMatrix()
         glTranslatef(0, 300, 50*scale)
-        gluSphere(gluNewQuadric(), 50*scale, 20, 20)
+        gluSphere(gluNewQuadric(), 50*scale, 20, 20) #func,radius,slices,stacks
         glPopMatrix()
 
         #___head___
@@ -304,12 +259,15 @@ def make_powerup():
 def draw_powerups():
     global powerup_li
     for p in powerup_li:
-        if p["type"]=="speed": glColor3f(0,1,0)
-        if p["type"]=="ammo": glColor3f(1,1,0)
-        if p["type"]=="slow": glColor3f(0,0,1)
+        if p["type"]=="speed":
+            glColor3f(1, 1, 0)
+        if p["type"]=="ammo":
+            glColor3f(1,1,0)
+        if p["type"]=="slow":
+            glColor3f(1,0,0)
         glPushMatrix()
-        glTranslatef(p["x"],p["y"],p["z"]+20)
-        glutSolidCube(20)
+        glTranslatef(p["x"],p["y"],p["z"]+40)
+        gluSphere(gluNewQuadric(), 25, 20, 20) #func,radius,slices,stacks
         glPopMatrix()
 
 def check_powerup_collection():
@@ -342,11 +300,8 @@ def draw_shapes():
     # +x is left, -x is right
     # +y is is towards me, -y is away from me
     # +z is up, -z is down
-    if not fpp:
-        main_char()
-    if fpp:
-        main_chr_with_samller_head()
- 
+
+    main_char()
     draw_enemy()
     draw_bullets()
 
@@ -514,22 +469,22 @@ def specialKeyListener(key, x, y):
     """
     global camera_pos
     x, y, z = camera_pos
-
+    if fpp == True or fpp == False:
     # Move camera up (UP arrow key)
-    if key == GLUT_KEY_UP:
-        y -= 10
+        if key == GLUT_KEY_UP:
+            y -= 10
 
-    # # Move camera down (DOWN arrow key)
-    if key == GLUT_KEY_DOWN:
-        y += 10
+        # # Move camera down (DOWN arrow key)
+        if key == GLUT_KEY_DOWN:
+            y += 10
 
-    # moving camera left (LEFT arrow key)
-    if key == GLUT_KEY_LEFT:
-        x += 10  
+        # moving camera left (LEFT arrow key)
+        if key == GLUT_KEY_LEFT:
+            x += 10  
 
-    # moving camera right (RIGHT arrow key)
-    if key == GLUT_KEY_RIGHT:
-        x -= 10  
+        # moving camera right (RIGHT arrow key)
+        if key == GLUT_KEY_RIGHT:
+            x -= 10  
 
 
     camera_pos = (x, y, z)
@@ -550,7 +505,7 @@ def mouseListener(button, state, x, y):
 
 
 def setupCamera():
-    global screen_width, screen_height, fpp, scale_factor, player_angle
+    global screen_width, screen_height, fpp, scale_factor, player_angle,fovY
     """
     Configures the camera's projection and view settings.
     Uses a perspective projection and positions the camera to look at the target.
@@ -559,32 +514,47 @@ def setupCamera():
     glLoadIdentity()  # Reset the projection matrix
     # Set up a perspective projection (field of view, aspect ratio, near clip, far clip)
     aspect_ratio = screen_width/screen_height
-    if fpp:
-        gluPerspective(fovY, aspect_ratio, 0.1, 2500)
+    if day_night == "day":
+        far_plane = 2500
     else:
-        gluPerspective(fovY, aspect_ratio, 0.1, 1500) #fov, ratio, closest obj, farthest obj
+        far_plane = 600
+        fovY = 80
+    if fpp:
+        gluPerspective(fovY, aspect_ratio, 0.1, far_plane)
+    else:
+        gluPerspective(fovY, aspect_ratio, 0.1, far_plane) #fov, ratio, closest obj, farthest obj
     glMatrixMode(GL_MODELVIEW)  # Switch to model-view matrix mode
     glLoadIdentity()  # Reset the model-view matrix
 
     # Extract camera position and look-at target
     if fpp:
         cam_pos_x = player_x
-        cam_pos_y = player_y-30 #behind
-        cam_pos_z = player_z + 170*scale_factor #top
+        cam_pos_y = player_y+10 #behind
+        cam_pos_z = player_z + 150*scale_factor #top
 
-        look_at_x = player_x
-        look_at_y = player_y
+        look_at_x = player_x + math.sin(math.radians(player_angle)) * 100
+        look_at_y = player_y - math.cos(math.radians(player_angle)) * 100
         look_at_z = player_z + 150*scale_factor
 
         gluLookAt(cam_pos_x, cam_pos_y, cam_pos_z,
                 look_at_x, look_at_y, look_at_z,
                 0, 0, 1)
     else:
-        x, y, z = camera_pos
-        # Position the camera and set its orientation
-        gluLookAt(x, y, z,  # Camera position
-                0, 0, 0,  # Look-at target
-                0, 0, 1)  # Up vector (Y-axis)
+        dist = 150  # how far behind
+        height = 170  # how high above
+
+        cam_pos_x = player_x - math.sin(math.radians(player_angle)) * dist
+        cam_pos_y = player_y + math.cos(math.radians(player_angle)) * dist
+        cam_pos_z = player_z + height
+
+        # look at the player
+        look_at_x = player_x
+        look_at_y = player_y
+        look_at_z = player_z + 100  # center on player body
+
+        gluLookAt(cam_pos_x, cam_pos_y, cam_pos_z,
+                look_at_x, look_at_y, look_at_z,
+                0, 0, 1)
 
 
 def idle():
@@ -674,9 +644,9 @@ def showScreen():
 
             #color alternate
             if (row + column) % 2 != 0:
-                glColor3f(1.0, 1.0, 1.0)
+                glColor3f(0.33, 0.42, 0.18)
             if (row + column) % 2 == 0:
-                glColor3f(0.7, 0.5, 0.95)
+                glColor3f(0.6, 0.8, 0.35)
 
             #satrts from (-GRID_LENGTH, -GRID_LENGTH) - top-right corner (-x,-y,0)
             x0 = -GRID_LENGTH + row*cell_size
@@ -694,7 +664,6 @@ def showScreen():
             glVertex3f(x0, y0, 0) #top-right
             glVertex3f(x1, y0, 0) #top-left
     glEnd()
-
     #20 px right, 200 px down from top-left
     draw_text(-screen_width/2 + 20, screen_height/2- 200, f"Player Life Remaining: {life}")
     #20 px right, 180 px down from top-left
@@ -706,11 +675,9 @@ def showScreen():
     draw_tower()
     draw_shapes()
     # Swap buffers for smooth rendering (double buffering)
-    
+
     glutSwapBuffers()
     
-
-
 
 # Main function to set up OpenGL window and loop
 def main():
