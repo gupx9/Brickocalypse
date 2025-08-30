@@ -1,0 +1,32 @@
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * #for utilities like gluPerspective() and gluSphere()
+from OpenGL.GLUT import GLUT_BITMAP_HELVETICA_18
+import math
+import random
+import time
+
+
+
+# Main function to set up OpenGL window and loop
+def main():
+    glutInit()
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)  # Double buffering, RGB color, depth test
+    glutInitWindowSize(1200,700)  # Window size
+    glutInitWindowPosition(0,0)  # Window position top left
+    wind = glutCreateWindow(b"Brickocalypse")  # Create the window
+
+    glEnable(GL_DEPTH_TEST)
+
+    glutDisplayFunc(showScreen)  # Register display function
+    glutKeyboardFunc(keyboardListener)  # Register keyboard listener
+    glutSpecialFunc(specialKeyListener)
+    glutMouseFunc(mouseListener)
+    glutIdleFunc(idle)  # Register the idle function to move the bullet automatically
+    make_obstacles(50,30)
+    make_bricks()
+    make_enemy() #instant spawn
+    glutMainLoop()  # Enter the GLUT main loop
+
+if __name__ == "__main__":
+    main()
