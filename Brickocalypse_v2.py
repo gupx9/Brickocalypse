@@ -373,15 +373,15 @@ def draw_enemy():
 
         #color and shape depending on type
         if enemy["type"] == "tank":
-            glColor3f(0.5, 0.0, 0.0)  # dark red
-            body_scale_x = 1.5  # wide
-            body_scale_y = 1.5
+            glColor3f(0.2, 0.0, 0.0)  # dark red
+            body_scale_x = 2.5  # wide
+            body_scale_y = 2
             body_scale_z = 1.0  # normal height
         elif enemy["type"] == "fast":
             glColor3f(1.0, 0.5, 0.0)  # orange
             body_scale_x = 1.0
             body_scale_y = 1.0
-            body_scale_z = 1.5  # taller
+            body_scale_z = 2  # taller
         else:  # normal
             glColor3f(1.0, 0.0, 0.0)  # red
             body_scale_x = 1.0
@@ -535,7 +535,7 @@ def animate():
                 #respawn
                 while True:
                     enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
-                    enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+                    enemy["y"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
                     enemy["z"] = 0
                     if is_colliding_with_obstacles(enemy["x"], enemy["y"], radius=80) == False:
                         if (abs(enemy["x"]) < 200 and abs(enemy["y"]) < 200) == False:
@@ -578,7 +578,7 @@ def animate():
 
         spd = enemy_speed
         if enemy["type"]=="fast":
-            spd *= 2
+            spd *= 2.5
         if enemy["type"]=="tank":
             spd *= 0.5
         enemy["x"] += (dx/dist) * spd
