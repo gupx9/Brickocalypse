@@ -6,7 +6,168 @@ import math
 import random
 import time
 
+tower_height = 0
+brick_li=[]
+enemy_li=[]
+enemy_scale_factor = 1
+game_over = False
 
+def make_bricks():
+    global brick_li
+    brick_li = [] #clear
+    brick_count = 3
+    for i in range(brick_count):
+        while True:
+            x = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+            y = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+            #so brick doesnt go into obj
+            if not is_colliding_with_obstacles(x, y, radius=30) and not (abs(x)<150 and abs(y)<150):
+                break
+        brick_li.append({"x": x, "y": y, "z": 0, "collected": False})
+
+def draw_bricks():
+    global brick_li
+    count = 0
+    for b in brick_li:
+        if not b["collected"]:
+            glColor3f(1.0, 0.5, 0.0)  # orange
+            glPushMatrix()
+            glTranslatef(b["x"], b["y"], b["z"]+20)
+            glScalef(1.75, 3, 1)
+            glutSolidCube(50)
+            glPopMatrix()
+            count+=1
+
+#placing bricks  
+def check_brick_collection():
+    global brick_li, tower_height
+    for b in brick_li:
+        if not b["collected"]:
+            dist = math.sqrt((player_x-b["x"])**2+(player_y-b["y"])**2)
+            if dist < 40:
+                b["collected"] = True
+                # player then must return to center block to stack bricks
+    #minimun tower boundary        
+    if player_x**2 + player_y**2 < 80**2:  #tower center with minimun offset
+        for b in brick_li:
+            if b["collected"]:
+                tower_height += 1
+                #bricks spawn at random without colliding with obj
+                while True:
+                    x = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+                    y = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+                    if is_colliding_with_obstacles(x, y, radius=80) == False:
+                        if (abs(x)<200 and abs(y)<200) == False: # if not too close to the center tower
+                            break
+                #pass the values
+                b["x"] = x
+                b["y"] = y
+                b["collected"] = False
+
+def make_enemy():
+    global enemy_li, tower_height
+    enemy_li=[]
+    for i in range(enemy_count):
+        # choose type depending on tower_height
+        if tower_height >= 8:
+            t = random.choice(["normal", "fast", "tank"])
+        elif tower_height >= 4:
+            t = random.choice(["normal", "fast"])
+        else:
+            t = "normal"
+        while True:
+            x = random.randint(-GRID_LENGTH, GRID_LENGTH)
+            y = random.randint(-GRID_LENGTH, GRID_LENGTH)
+            if is_colliding_with_obstacles(x, y, radius=80) == False:
+                if (abs(x) < 200 and abs(y) < 200) == False: # if not too close to the center tower
+                    break
+        enemy_li.append({"x": x, "y": y, "z":0, "alive":True, "type":t})
+
+def draw_enemy():
+    global enemy_scale_factor, enemy_li,game_over
+    for enemy in enemy_li:
+        if enemy["alive"] == False:
+            continue
+
+        #enemy size change
+        base_scale = enemy_scale_factor * (1+ 0.2*math.sin(time.time()*2.5 ))
+        glPushMatrix()
+        glTranslatef(enemy["x"], enemy["y"], enemy["z"])
+
+        #color and shape depending on type
+        if enemy["type"] == "tank":
+            glColor3f(0.2, 0.0, 0.0)  # dark red
+            body_scale_x = 2.5  # wide
+            body_scale_y = 2
+            body_scale_z = 1.0  # normal height
+        elif enemy["type"] == "fast":
+            glColor3f(1.0, 0.5, 0.0)  # orange
+            body_scale_x = 1.0
+            body_scale_y = 1.0
+            body_scale_z = 2  # taller
+        else:  # normal
+            glColor3f(1.0, 0.0, 0.0)  # red
+            body_scale_x = 1.0
+            body_scale_y = 1.0
+            body_scale_z = 1.0
+   
+        #initializing quadric - not needed here but used as a safe case
+        quad = gluNewQuadric()
+
+        # Body
+        glPushMatrix()
+        glTranslatef(0, 300, 50*base_scale)
+        glScalef(body_scale_x, body_scale_y, body_scale_z)
+        gluSphere(quad, 50*base_scale, 20, 20)
+        glPopMatrix()
+
+        # Head
+        glColor3f(0.0, 0.0, 0.0)
+        glPushMatrix()
+        glTranslatef(0, 280, 120*base_scale)
+        gluSphere(quad, 15*base_scale, 20, 20)
+        glPopMatrix()
+
+        #deleting quadric
+        gluDeleteQuadric(quad)
+
+        glPopMatrix()
+
+def draw_tower():
+    global tower_height
+    glColor3f(0.8, 0.3, 0.1)
+    for i in range(tower_height):
+        if i % 2 == 0:
+            glColor3f(0.36, 0.20, 0.09)  # darker brown
+        else:
+            glColor3f(0.55, 0.27, 0.07)  # dark brown
+        glPushMatrix()
+        glTranslatef(0,0,i*50)
+        glutSolidCube(200)
+        glPopMatrix()
+
+def make_powerup():
+    global powerup_li, last_powerup_time
+    now = time.time()
+    if now - last_powerup_time > 10:
+        last_powerup_time = now
+        p = random.choice(["speed","ammo","slow"])
+        powerup_li.append({"x":random.randint(-GRID_LENGTH,GRID_LENGTH),
+                           "y":random.randint(-GRID_LENGTH,GRID_LENGTH),
+                           "z":0,"type":p})
+def draw_powerups():
+    global powerup_li
+    for p in powerup_li:
+        if p["type"]=="speed":
+            glColor3f(1,1,0) #yellow
+        if p["type"]=="ammo":
+            glColor3f(0,0,1) #blue
+        if p["type"]=="slow":
+            glColor3f(1,0,0) #red
+        glPushMatrix()
+        glTranslatef(p["x"],p["y"],p["z"]+40)
+        gluSphere(gluNewQuadric(), 25, 20, 20) #func,radius,slices,stacks
+        glPopMatrix()
 
 # Main function to set up OpenGL window and loop
 def main():
