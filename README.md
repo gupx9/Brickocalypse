@@ -48,7 +48,7 @@ Normal Zombie (Red) – Standard speed and damage.
 
 Fast Zombie (Orange) – Unlocks once tower reaches height 4.
 
-Tank Zombie (Purple) – Unlocks once tower reaches height 8; destroys 4 tower blocks on contact.
+Tank Zombie (Dark Red) – Unlocks once tower reaches height 8; destroys 4 tower blocks on contact.
 
 
 
