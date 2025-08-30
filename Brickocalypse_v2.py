@@ -104,9 +104,7 @@ def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18): #draws 2D text on the 
     glMatrixMode(GL_MODELVIEW)
 
 def make_obstacles(num_trees, num_rocks):
-    """
-    Create a fixed number of trees and rocks, avoiding center area.
-    """
+
     global obstacle_li
     obstacle_li = []
 
@@ -115,7 +113,7 @@ def make_obstacles(num_trees, num_rocks):
         while True:
             x = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
             y = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
-            if abs(x) < 150 and abs(y) < 150:
+            if abs(x) < 200 and abs(y) < 200:
                 continue
             # check no overlap
             ok = True
@@ -347,11 +345,13 @@ def make_enemy():
     global enemy_li, tower_height
     enemy_li=[]
     for i in range(enemy_count):
-        t = "normal"
+        # choose type depending on tower_height
         if tower_height >= 8:
-            t = random.choice(["normal","fast","tank"])
+            t = random.choice(["normal", "fast", "tank"])
         elif tower_height >= 4:
-            t = random.choice(["normal","fast"])
+            t = random.choice(["normal", "fast"])
+        else:
+            t = "normal"
         while True:
             x = random.randint(-GRID_LENGTH, GRID_LENGTH)
             y = random.randint(-GRID_LENGTH, GRID_LENGTH)
@@ -359,7 +359,6 @@ def make_enemy():
                 if (abs(x) < 200 and abs(y) < 200) == False: # if not too close to the center tower
                     break
         enemy_li.append({"x": x, "y": y, "z":0, "alive":True, "type":t})
-
 
 def draw_enemy():
     global enemy_scale_factor, enemy_li,game_over
@@ -371,7 +370,6 @@ def draw_enemy():
         base_scale = enemy_scale_factor * (1+ 0.2*math.sin(time.time()*2.5 ))
         glPushMatrix()
         glTranslatef(enemy["x"], enemy["y"], enemy["z"])
-        
 
         #color and shape depending on type
         if enemy["type"] == "tank":
@@ -514,7 +512,6 @@ def animate():
     global bullet_li, enemy_li,enemy_nerf, score, life, enemy_speed, game_over,player_boost_speed, boost_end_time, bullet_speed,tower_height,move_speed,enemy_slow_time
     if game_over:
         return
-    
 
     #bullet movement
     for bullet_dict in bullet_li.copy():
@@ -534,10 +531,25 @@ def animate():
                 if bullet_dict in bullet_li:
                     bullet_li.remove(bullet_dict)
                 score += 1
-                enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
-                enemy["y"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
-                enemy["z"] = 0
+                enemy["alive"] = False #kill
+                #respawn
+                while True:
+                    enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+                    enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
+                    enemy["z"] = 0
+                    if is_colliding_with_obstacles(enemy["x"], enemy["y"], radius=80) == False:
+                        if (abs(enemy["x"]) < 200 and abs(enemy["y"]) < 200) == False:
+                            break
+                #upgrade - set alive true
                 enemy["alive"] = True
+                
+                # enemy type based on current tower height
+                if tower_height >= 8:
+                    enemy["type"] = random.choice(["normal", "fast", "tank"])
+                elif tower_height >= 4:
+                    enemy["type"] = random.choice(["normal", "fast"])
+                else:
+                    enemy["type"] = "normal"
                 break
     #boost timer
     if player_boost_speed and time.time()>boost_end_time:
@@ -583,6 +595,14 @@ def animate():
             enemy["x"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
             enemy["y"] = random.randint(-GRID_LENGTH+100, GRID_LENGTH-100)
             enemy["z"] = 0
+
+            #upgrade
+            if tower_height >= 8:
+                enemy["type"] = random.choice(["normal", "fast", "tank"])
+            elif tower_height >= 4:
+                enemy["type"] = random.choice(["normal", "fast"])
+            else:
+                enemy["type"] = "normal"
 
         #will add enemy being drawn to the tower if game doesn't get to hard already
         #halka tweak lagbe, but same/easier as the tower is static
@@ -858,7 +878,7 @@ def showScreen():
     #20 px right, 180 px down from top-left
     draw_text(-screen_width/2 + 20, screen_height/2- 180, f"Bullets Left: {max_bullets - len(bullet_li)}")
     #20 px right, 160 px down from top-left
-    # draw_text(-screen_width/2 + 20, screen_height/2- 160, f"Player Bullet Missed: {}")
+    draw_text(-screen_width/2 + 20, screen_height/2- 160, f"Tower Height: {tower_height}")
     draw_shapes()
 
     glutSwapBuffers()
@@ -886,4 +906,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
