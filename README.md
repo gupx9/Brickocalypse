@@ -1,42 +1,97 @@
-# Brickocalypse
-Brickocalypse
-Build your tower while fighting off zombies! Collect pieces, stack them high, and protect your tower from the zombie horde. Reach the target height before the zombies destroy it!
+🧱 Brickocalypse
 
-Core Gameplay
+Build your tower while fighting off zombies!
+Collect pieces, stack them high, and protect your tower from the zombie horde.
+Reach the target height before the zombies destroy it!
+
+
+
+🎮 Core Gameplay
+
 Tower Building – Collect pieces scattered in the arena and stack them to grow your central tower.
-
 
 Zombie Attacks – Endless waves of zombies constantly move toward you and the tower.
 
-
-Tower Defense – If a zombie reaches the tower, it destroys one layer, reducing your progress.
-
+Tower Defense – If a zombie touches the tower, it destroys one layer, reducing your progress.
 
 Height Goal – Reach a specific tower height to win the game.
 
+Player Survival – Avoid zombies yourself; if they catch you, you lose health points.
 
-Player Survival – Avoid zombies yourself; if they catch you, you lose a health point
 
 
-Mechanics & Progression
+⚙️ Mechanics & Progression
+
 Resource Gathering – Search for and carry building pieces back to the tower center.
 
+Stack Physics – Each placed block adds realistic tower height.
 
-Stack Physics – Each placed block adds realistic height.
-Increasing Difficulty – Zombie waves get stronger and faster over time.
+Increasing Difficulty – Zombie waves grow stronger and faster over time (through upgrades).
+
+Power-Ups – Spawn randomly every 10s, lasting for 10s:
+
+🟡 Yellow Orb – Faster player speed
+
+🔵 Blue Orb – Increased gun magazine
+
+🔴 Red Orb – Slows enemies
+
+Day/Night Cycle – Every 30s:
+
+☀️ Day: Full arena visibility (TPP)
+
+🌙 Night: Only 1/8th of arena visible (TPP)
+
+🧟 Zombie Types
+
+Normal Zombie (Red) – Standard speed and damage.
+
+Fast Zombie (Orange) – Unlocks once tower reaches height 4.
+
+Tank Zombie (Purple) – Unlocks once tower reaches height 8; destroys 4 tower blocks on contact.
 
 
-Power-Ups – Spawned randomly every 10s, Temporary boosts like faster speed, gun magazine, slow enemies
-Day/Night - at day full arena visible (tpp), at night 1/4th of the arena is visible (tpp)
+
+🏟️ Visuals & Immersion
+
+Dynamic Arena – Switch freely between First Person (FPP) and Third Person (TPP) views.
+
+Obstacles – Random barriers block paths, forcing strategic movement.
+
+Zombie Variety – Different behaviors and colors for clear identification.
 
 
-Visuals & Immersion
-Dynamic Arena –Allows players to switch between first and third person POV
+
+🎮 Controls
+
+WASD – Move player
+
+Mouse (left click) – Shoot
+
+Mouse (right click) – fpp/tpp toggle
+
+Arrow Keys – Change perspective (switch between FPP and TPP)
 
 
-Zombie Variety – Different zombie types (fast, tanky, or explosive).
-Fast - spawns after tower stack is 4
-Tanky - spawns after tower stack is 8, takes four stacks from the tower is touched
 
-Boundary Walls- Prevents the player from moving freely
+🚀 How to Play
 
+Collect scattered tower pieces and bring them to the tower center.
+
+Shoot or avoid zombies while carrying blocks.
+
+Defend your tower from zombies (they destroy blocks if they touch it).
+
+Use power-ups to survive longer.
+
+Reach the target tower height to win!
+
+
+
+🛠️ Tech
+
+Language: Python
+
+Library: PyOpenGL
+
+Rendering: OpenGL immediate mode
