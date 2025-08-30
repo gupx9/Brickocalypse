@@ -1,4 +1,4 @@
-🧱 Brickocalypse
+**🧱 Brickocalypse**
 
 Build your tower while fighting off zombies!
 Collect pieces, stack them high, and protect your tower from the zombie horde.
@@ -6,7 +6,10 @@ Reach the target height before the zombies destroy it!
 
 
 
-🎮 Core Gameplay
+**🎮 Core Gameplay**
+
+🚀 How to Play
+Collect scattered tower pieces and bring them to the tower center. Shoot or avoid zombies while carrying blocks. Defend your tower from zombies (they destroy blocks if they touch it). Use power-ups to survive longer. Reach the target tower height to win!
 
 Tower Building – Collect pieces scattered in the arena and stack them to grow your central tower.
 
@@ -20,7 +23,7 @@ Player Survival – Avoid zombies yourself; if they catch you, you lose health p
 
 
 
-⚙️ Mechanics & Progression
+**⚙️ Mechanics & Progression**
 
 Resource Gathering – Search for and carry building pieces back to the tower center.
 
@@ -52,7 +55,7 @@ Tank Zombie (Dark Red) – Unlocks once tower reaches height 8; destroys 4 tower
 
 
 
-🏟️ Visuals & Immersion
+**🏟️ Visuals & Immersion**
 
 Dynamic Arena – Switch freely between First Person (FPP) and Third Person (TPP) views.
 
@@ -62,7 +65,7 @@ Zombie Variety – Different behaviors and colors for clear identification.
 
 
 
-🎮 Controls
+**🎮 Controls**
 
 WASD – Move player
 
@@ -74,21 +77,8 @@ Arrow Keys – Change perspective (switch between FPP and TPP)
 
 
 
-🚀 How to Play
 
-Collect scattered tower pieces and bring them to the tower center.
-
-Shoot or avoid zombies while carrying blocks.
-
-Defend your tower from zombies (they destroy blocks if they touch it).
-
-Use power-ups to survive longer.
-
-Reach the target tower height to win!
-
-
-
-🛠️ Tech
+**🛠️ Tech**
 
 Language: Python
 
